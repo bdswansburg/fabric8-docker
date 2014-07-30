@@ -1,11 +1,11 @@
 FROM ubuntu
 
-sudo apt-get update
-sudo apt-get install default-jdk --silent
-sudo apt-get install telnet --silent
-sudo apt-get install curl --silent
-sudo apt-get install unzip --silent
-sudo apt-get install openssh-server --silent
+RUN apt-get -y update
+RUN apt-get -y install default-jdk --silent
+RUN apt-get -y install telnet --silent
+RUN apt-get -y install curl --silent
+RUN apt-get -y install unzip --silent
+RUN apt-get -y install openssh-server --silent
 
 #set the fabric8 version env variable
 ENV FABRIC8_VERSION 1.1.0.CR5
@@ -30,8 +30,8 @@ WORKDIR /home/fabric8
 USER fabric8
 
 # temporarily use the jboss nexus while the release syncs
-#RUN curl --silent --output fabric8.zip http://central.maven.org/maven2/io/fabric8/fabric8-karaf/$FABRIC8_VERSION/fabric8-karaf-$FABRIC8_VERSION.zip
-RUN curl --silent --output fabric8.zip http://repository.jboss.org/nexus/content/repositories/fusesource_releases_to_central_public-1097/io/fabric8/fabric8-karaf/$FABRIC8_VERSION/fabric8-karaf-$FABRIC8_VERSION.zip
+RUN curl --silent --output fabric8.zip http://central.maven.org/maven2/io/fabric8/fabric8-karaf/$FABRIC8_VERSION/fabric8-karaf-$FABRIC8_VERSION.zip
+#RUN curl --silent --output fabric8.zip http://repository.jboss.org/nexus/content/repositories/fusesource_releases_to_central_public-1097/io/fabric8/fabric8-karaf/$FABRIC8_VERSION/fabric8-karaf-$FABRIC8_VERSION.zip
 RUN unzip -q fabric8.zip 
 RUN ls -al
 #RUN mv fabric8-karaf-1.1.0-SNAPSHOT fabric8-karaf
