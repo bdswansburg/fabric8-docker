@@ -1,25 +1,26 @@
-FROM fedora
+FROM ubuntu
 
-# telnet is required by some fabric command. without it you have silent failures
-RUN yum install -y java-1.7.0-openjdk unzip
+sudo apt-get update
+sudo apt-get install default-jdk --silent
+sudo apt-get install telnet --silent
+sudo apt-get install curl --silent
+sudo apt-get install unzip --silent
+sudo apt-get install openssh-server --silent
 
 #set the fabric8 version env variable
 ENV FABRIC8_VERSION 1.1.0.CR5
 
-# Clean the metadata
-RUN yum clean all
-
-ENV JAVA_HOME /usr/lib/jvm/jre
+ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64/jre
 
 ENV FABRIC8_KARAF_NAME root
 ENV FABRIC8_BINDADDRESS 0.0.0.0
-ENV FABRIC8_PROFILES docker
+#ENV FABRIC8_PROFILES docker
 
 # add a user for the application, with sudo permissions
-RUN useradd -m fabric8 ; echo fabric8: | chpasswd ; usermod -a -G wheel fabric8
+RUN useradd -m fabric8 ; echo fabric8:fabric8 | chpasswd
 
 # command line goodies
-RUN echo "export JAVA_HOME=/usr/lib/jvm/jre" >> /etc/profile
+RUN echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/jre" >> /etc/profile
 RUN echo "alias ll='ls -l --color=auto'" >> /etc/profile
 RUN echo "alias grep='grep --color=auto'" >> /etc/profile
 
@@ -36,7 +37,7 @@ RUN ls -al
 #RUN mv fabric8-karaf-1.1.0-SNAPSHOT fabric8-karaf
 RUN mv fabric8-karaf-$FABRIC8_VERSION fabric8-karaf
 RUN rm fabric8.zip
-#RUN chown -R fabric8:fabric8 fabric8-karaf
+RUN chown -R fabric8:fabric8 fabric8-karaf
 
 WORKDIR /home/fabric8/fabric8-karaf/etc
 
@@ -44,7 +45,7 @@ WORKDIR /home/fabric8/fabric8-karaf/etc
 RUN sed -i '/karaf.name=root/d' system.properties 
 
 RUN echo bind.address=0.0.0.0 >> system.properties
-RUN echo fabric.environment=docker >> system.properties
+#RUN echo fabric.environment=docker >> system.properties
 RUN echo zookeeper.password.encode=true >> system.properties
 
 # lets remove the karaf.delay.console=true to disable the progress bar
@@ -66,7 +67,7 @@ RUN echo >> data/log/karaf.log
 
 WORKDIR /home/fabric8
 
-RUN curl --silent --output startup.sh https://raw.githubusercontent.com/fabric8io/fabric8-docker/c9583367e3da4ca7adfc535107b9dc9ce07589d0/startup.sh
+RUN curl --silent --output startup.sh https://raw.githubusercontent.com/bdswansburg/fabric8-docker/master/startup.sh
 RUN chmod +x startup.sh
 
 EXPOSE 22 1099 2181 8101 8181 9300 9301 44444 61616 
